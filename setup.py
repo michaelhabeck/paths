@@ -27,6 +27,16 @@ DESCRIPTION     = __doc__
 LICENSE         = 'MIT'
 REQUIRES        = ['numpy', 'scipy', 'csb']
 
+module = Extension('paths._paths',
+                   define_macros = [('MAJOR_VERSION', '0'),
+                                    ('MINOR_VERSION', '1'),
+                                    ('PY_ARRAY_UNIQUE_SYMBOL','PATHS')],
+                   include_dirs = [numpy.get_include()],
+                   extra_compile_args = ['-Wno-return-type -Wno-cpp'],
+                   sources = ['./paths/_paths.c'])
+
+#os.environ['CFLAGS'] = '-Wno-cpp'
+
 setup(
     name=NAME,
     packages=find_packages(exclude=('tests',)),
@@ -39,8 +49,9 @@ setup(
     license=LICENSE,
     requires=REQUIRES,
     cmdclass={'build_ext': build_ext},
-    ## ext_modules=cythonize("cg/*.pyx"), 
-    include_dirs = [numpy.get_include()],
+    ext_modules=[module],
+    package_data = {'paths': ['data/*.npz']},
+   include_dirs = [numpy.get_include()],
     classifiers=(
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',

@@ -4,7 +4,16 @@ from scipy import optimize
 
 from .models import Gaussian
 
-class GaussianKernel(object):
+class Kernel(object):
+
+    def __call__(self, x):
+        raise NotImplementedError
+
+    @property
+    def stationary(self):
+        pass
+
+class GaussianKernel(Kernel):
     """GaussianKernel
 
     Gaussian transition kernel with prescribed stationary distribution
