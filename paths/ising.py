@@ -1,7 +1,7 @@
 import numpy as np
+
+from .core import Model, Kernel
 from ._paths import ising_energy, ising_sample
-from .models import Model
-from .kernel import Kernel
 
 class IsingModel(Model):
 

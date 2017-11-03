@@ -1,6 +1,6 @@
 import numpy as np
 
-from .kernel import Bridge
+from .gaussian import Bridge
 
 def make_bridge(start, end, schedule, n=1, constructor=Bridge):
     """
@@ -28,8 +28,11 @@ def make_bridge(start, end, schedule, n=1, constructor=Bridge):
 
     return bridge
 
-def generate_paths(bridge, n_paths=1):
+def generate_paths(bridge, n_paths=1, store_paths=False):
     """
+    Run a nonequilibrium simulation by stepping through a sequence
+    of Markov perturbations
+    
     Parameters
     ----------
     bridge : iterable
@@ -37,11 +40,15 @@ def generate_paths(bridge, n_paths=1):
 
     n_paths : integer
       number of paths that will be simulated
+
+    store_paths : boolean
+      flag that specifies if the full paths will be return or only
+      the final states
     """
-    X = [bridge[0].stationary.sample(int(n_paths))]
+    X = [bridge[0].stationary.sample(n=int(n_paths))]
 
     for T in bridge[1:]:
-        x = T.sample(y=X[-1])
+        x = T(X[-1])
         X.append(x)
         
     return np.array(X)

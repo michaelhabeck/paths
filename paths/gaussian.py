@@ -2,42 +2,57 @@ import numpy as np
 
 from scipy import optimize
 
-from .models import Gaussian
+from .core import Model, Kernel
 
-class Kernel(object):
+class Gaussian(Model):
+    """Gaussian
 
-    def __call__(self, x):
-        raise NotImplementedError
-
+    Univariate Gaussian distribution
+    """
     @property
-    def stationary(self):
-        pass
+    def log_Z(self):
+        return 0.5 * np.log(2*np.pi*self.sigma**2)
+
+    def __init__(self, mu=0., sigma=1.):
+
+        super(Gaussian, self).__init__()
+
+        self.mu    = float(mu)
+        self.sigma = float(sigma)
+
+    def sample(self, x=None, n=None):
+        """
+        Generate a sample (x will be ignored)
+        """
+        return np.random.standard_normal(n) * self.sigma + self.mu
+
+    def energy(self, x):
+        """
+        Potential energy of the harmonic oscillator
+        """
+        return 0.5 * (self.mu - x)**2 / self.sigma**2
+
+    def __str__(self):
+        return 'Gaussian(mu={0:.2f}, sigma={1:.2f})'.format(self.mu, self.sigma)
+
+    def kl(self, other):
+        """
+        Relative entropy / Kullback-Leibler divergence
+        """
+        return 0.5 * ((self.sigma**2 + (self.mu - other.mu)**2) / other.sigma**2 - 1 + \
+                      np.log(other.sigma**2/self.sigma**2))
 
 class GaussianKernel(Kernel):
     """GaussianKernel
 
     Gaussian transition kernel with prescribed stationary distribution
+    which is itself a Gaussian with known mean and variance
     """
-    def __init__(self, tau=0., mu=0., sigma=1.):
-        """
-        Parameters
-        ----------
-        tau : float in [0., 1.]
-          parameter specifying the convergence of the transition kernel
-
-        mu, sigma : float
-          mean and standard deviation of the Gaussian stationary distribution
-        """
-        self._tau   = float(tau)
-        self._mu    = float(mu)
-        self._sigma = float(sigma)
-
-    def __str__(self):
-        return 'GaussianKernel(tau={0:.3e}, mu={1:.2f}, sigma={2:.2f})'.format(
-            self.tau, self._mu, self._sigma)
-
     @property
     def tau(self):
+        """
+        Relaxation time
+        """
         return self._tau
 
     @property
@@ -67,9 +82,26 @@ class GaussianKernel(Kernel):
     def stationary(self):
         return Gaussian(self._mu, self._sigma)
 
-    def sample(self, n=None, y=0):
-        if np.iterable(y): n = len(y)
-        return np.random.standard_normal(n) * self.sigma + self.mu(y)
+    def __init__(self, tau=0., mu=0., sigma=1.):
+        """
+        Parameters
+        ----------
+        tau : float in [0., 1.]
+          parameter specifying the convergence of the transition kernel
+
+        mu, sigma : float
+          mean and standard deviation of the Gaussian stationary distribution
+        """
+        self._tau   = float(tau)
+        self._mu    = float(mu)
+        self._sigma = float(sigma)
+
+    def __str__(self):
+        return 'GaussianKernel(tau={0:.3e}, mu={1:.2f}, sigma={2:.2f})'.format(
+            self.tau, self._mu, self._sigma)
+
+    def __call__(self, x):
+        return np.random.standard_normal(np.shape(x)) * self.sigma + self.mu(x)
 
     def compose(self, other):
 
