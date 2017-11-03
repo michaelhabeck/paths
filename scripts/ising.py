@@ -65,7 +65,7 @@ est = (entropy.log_Z(1.),
        -cumulant(W_f, W_r),
        -bar(W_f, -W_r))
 
-out = 'log_Z={0:.2f}, JE_f={1:.2f}, Cum_f={2:.2f}, JE_r={3:.2f}, Cum={4:.2f}, BAR={5:.2f}'
+out = 'log(Z)={0:.2f}, JE_f={1:.2f}, Cum_f={2:.2f}, JE_r={3:.2f}, Cum={4:.2f}, BAR={5:.2f}'
 
 print out.format(*est)
 

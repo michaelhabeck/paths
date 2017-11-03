@@ -16,7 +16,7 @@ class Entropy(object):
           energies at which the microcanonical entropy is known
 
         s : numpy array
-          microcanonical entropies s(E) = log_g(E)
+          microcanonical entropies s(E) = log g(E)
         """
         self.E = E
         self.s = s
@@ -60,7 +60,7 @@ class IsingEntropy(Entropy):
 
         self.L = int(L)
 
-        s = np.load(os.path.join(path, 'data/ising-entropies.npz'))[str(self.L)]
+        s = np.load(os.path.join(path, 'data', 'ising-entropies.npz'))[str(self.L)]
         E = np.arange(-2*self.L**2, +2*self.L**2+1, 4)
 
         i = np.array([1, len(s)-2])
