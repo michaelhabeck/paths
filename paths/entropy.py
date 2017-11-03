@@ -3,6 +3,8 @@ import numpy as np
 
 from csb.numeric import log_sum_exp
 
+from .potts import PottsHistogram
+
 class Entropy(object):
     """Entropy
     
@@ -68,4 +70,27 @@ class IsingEntropy(Entropy):
         E = np.delete(E, i)
         
         super(IsingEntropy, self).__init__(E, s, normed)
+        
+class PottsEntropy(Entropy):
+    """PottsEntropy
+
+    Microcanonical entropies of the ten-state Potts model estimated with
+    the Wang-Landau algorithm
+    """
+    def __init__(self, L, normed=True):
+
+        if not L in (16,32):
+            msg = 'No precomputed microcanonical entropy for L={0} available'
+            raise ValueError(msg.format(L))
+
+        from . import __path__
+
+        path = __path__[0]
+
+        self.L = int(L)
+
+        s = np.load(os.path.join(path, 'data', 'potts-entropies.npz'))[str(self.L)]
+        E = PottsHistogram(L).E
+        
+        super(PottsEntropy, self).__init__(E, s, normed)
         

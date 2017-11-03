@@ -3,6 +3,22 @@ import numpy as np
 from .ising import IsingModel, IsingKernel
 from ._paths import potts_energy, potts_sample
 
+class PottsHistogram(object):
+
+    def __init__(self, L):
+
+        bins = range(-2*L**2, 1)
+        for i in range(3):
+            del bins[1]
+        del bins[2]
+
+        self.E = np.array(bins)
+        self._axis = np.append(self.E-0.1, self.E[-1]+0.1)
+        
+    def __call__(self, E):
+
+        return np.histogram(E.flatten(), self._axis)[0]
+        
 class PottsModel(IsingModel):
 
     def __init__(self, L, Q, beta=1.):
