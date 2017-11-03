@@ -7,7 +7,7 @@ import paths as pth
 import seaborn as sns
 import matplotlib.pylab as plt
 
-from paths.estimators import jarzynski, cumulant, bar
+from paths.estimators import jarzynski, cumulant, bar, histogram
 
 from csb.numeric import log_sum_exp
 
@@ -21,7 +21,7 @@ n_relax  = 1e3          ## number of spin flips used in transition kernel
 entropy  = pth.IsingEntropy(L)
 beta     = np.linspace(0., 1., n_beta)
 bridge   = [pth.IsingKernel(L, b, n_relax) for b in beta]
-energy   = pth.IsingModel(L,beta=beta.max()).energy
+energy   = pth.IsingModel(L,beta=1.).energy
 E_mean   = np.array(map(entropy.E_mean, beta))
 
 ## forward sampling, forward work
@@ -63,9 +63,10 @@ est = (entropy.log_Z(1.),
        -cumulant(W_f), 
        +jarzynski(+W_r),
        -cumulant(W_f, W_r),
-       -bar(W_f, -W_r))
+       -bar(W_f, -W_r),
+       -histogram(W_f, -W_r))
 
-out = 'log(Z)={0:.2f}, JE_f={1:.2f}, Cum_f={2:.2f}, JE_r={3:.2f}, Cum={4:.2f}, BAR={5:.2f}'
+out = 'log(Z)={0:.2f}, JE_f={1:.2f}, Cum_f={2:.2f}, JE_r={3:.2f}, Cum={4:.2f}, BAR={5:.2f}, hist={6:.2f}'
 
 print out.format(*est)
 

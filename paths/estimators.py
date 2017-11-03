@@ -3,6 +3,8 @@ Various evidence estimators for forward / backward MCMC simulations
 """
 import numpy as np
 
+from .entropy import Entropy
+
 from csb.numeric import log_sum_exp
 
 def jarzynski(w):
@@ -40,17 +42,36 @@ def bar(w_f, w_r, tol=1e-4):
 
     return dF
 
-def histogram(w_f, w_r, alpha=0.):
-
+def histogram(w_f, w_r, n_iter=1e5, tol=1e-10, alpha=0.):
+    """
+    Histogram estimator analogous to histogram methods used
+    in DOS estimation
+    """
     w = np.append(w_f,w_r)
-    wham = WHAM(len(w), 2)
-    wham.H += 1./len(w)
-    wham.N[:] = len(w_f)
 
+    N = np.array([len(w_f), len(w_r)])
     q = np.multiply.outer(np.array([0.,1.])-alpha, w)
-    wham.run(q, niter=int(1e5), tol=1e-10, verbose=0)
+    p = np.zeros(len(w)) - np.log(len(w))
 
-    p = DOS(w, wham.s)
+    L = []
 
-    return p.log_Z(-alpha)-p.log_Z(1-alpha), p
+    for _ in xrange(int(n_iter)):
+
+        f = -log_sum_exp((-q + p).T, 0)
+        
+        ## store log likelihood and report on progress
+
+        L.append(-np.dot(N,f) - p.sum())
+
+        ## update log histogram and normalize
+        
+        p  = -log_sum_exp((-q.T + f + np.log(N)).T, 0)
+        p -=  log_sum_exp(p)
+
+        if len(L) > 1 and abs((L[-2]-L[-1]) / (L[-2]+L[-1])) < tol:
+            break
+
+    p = Entropy(w, p)
+
+    return p.log_Z(-alpha)-p.log_Z(1-alpha)
 

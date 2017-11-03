@@ -8,7 +8,7 @@ import seaborn as sns
 import matplotlib.pylab as plt
 
 from paths.potts import PottsHistogram
-from paths.estimators import jarzynski, cumulant, bar
+from paths.estimators import jarzynski, cumulant, bar, histogram
 
 from csb.numeric import log_sum_exp
 
@@ -66,9 +66,10 @@ est = (entropy.log_Z(beta.max()),
        -cumulant(W_f), 
        +jarzynski(+W_r),
        -cumulant(W_f, W_r),
-       -bar(W_f, -W_r))
+       -bar(W_f, -W_r),
+       -histogram(W_f, -W_r))
 
-out = 'log(Z)={0:.2f}, JE_f={1:.2f}, Cum_f={2:.2f}, JE_r={3:.2f}, Cum={4:.2f}, BAR={5:.2f}'
+out = 'log(Z)={0:.2f}, JE_f={1:.2f}, Cum_f={2:.2f}, JE_r={3:.2f}, Cum={4:.2f}, BAR={5:.2f}, hist={6:.2f}'
 
 print out.format(*est)
 
