@@ -4,11 +4,20 @@ import numpy as np
 from csb.numeric import log_sum_exp
 
 class Entropy(object):
-    """
+    """Entropy
+    
     Microcanonical entropy or log density of states
     """
     def __init__(self, E, s, normed=True):
+        """
+        Parameters:
+        ----------
+        E : numpy array
+          energies at which the microcanonical entropy is known
 
+        s : numpy array
+          microcanonical entropies s(E) = log_g(E)
+        """
         self.E = E
         self.s = s
         
@@ -18,8 +27,21 @@ class Entropy(object):
         self.s -= log_sum_exp(self.s)
 
     def log_Z(self, beta):
+        """
+        Log partition function
+        """
         return log_sum_exp(-beta * self.E + self.s)
 
+    def E_mean(self, beta):
+        """
+        Average energy 
+        """
+        p  = -beta * self.E + self.s
+        p -= log_sum_exp(p)
+        p  = np.exp(p)
+        
+        return np.dot(p, self.E)
+    
 class IsingEntropy(Entropy):
     """IsingEntropy
 
