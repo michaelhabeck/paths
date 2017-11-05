@@ -30,7 +30,7 @@ X_f = [bridge[0].stationary.sample() for _ in xrange(n_paths)]
 E_f = [map(energy, X_f)]
 
 for T in bridge[1:]:
-    X_f  = [T(x) for x in X_f]
+    X_f  = map(T, X_f)
     E_f += [map(energy, X_f)]
     
 E_f = np.array(E_f)
@@ -50,7 +50,7 @@ E_r = [map(energy, X_r)]
 ## backward simulation using reverse bridge (detailed balance!)
 
 for T in bridge[::-1][1:]:
-    X_r  = [T(x) for x in X_r]
+    X_r  = map(T, X_r)
     E_r += [map(energy, X_r)]
     
 E_r = np.array(E_r)
