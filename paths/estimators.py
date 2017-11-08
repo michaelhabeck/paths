@@ -25,7 +25,7 @@ def cumulant(w_f, w_r=None):
 
 def bar(w_f, w_r, tol=1e-4):
     """
-    Bennet acceptance ratio
+    Bennett's acceptance ratio
     """
     dF = 0.5 * (jarzynski(w_f) - jarzynski(-w_r))
     

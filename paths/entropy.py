@@ -79,7 +79,7 @@ class PottsEntropy(Entropy):
     """
     def __init__(self, L, normed=True):
 
-        if not L in (16,32):
+        if not L in (8,16,32):
             msg = 'No precomputed microcanonical entropy for L={0} available'
             raise ValueError(msg.format(L))
 
