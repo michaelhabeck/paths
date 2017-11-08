@@ -87,6 +87,50 @@ static PyObject *potts_energy(PyObject *self, PyObject *args) {
   return Py_BuildValue("i", -E);
 }
 
+static PyObject *rbm_energy(PyObject *self, PyObject *args) { 
+
+  PyArrayObject *x_arr, *a_arr, *b_arr, *W_arr;
+  int i, j, m, n, *x;
+  double *a, *b, *W, E=0.;
+
+  if (!(PyArg_ParseTuple(args, "O!O!O!O!",
+			 &PyArray_Type, &x_arr,
+			 &PyArray_Type, &a_arr,
+			 &PyArray_Type, &b_arr,
+			 &PyArray_Type, &W_arr))) {
+    PyErr_SetString(PyExc_TypeError, "contiguous int array required");
+    return NULL;
+  }
+
+  m = a_arr->dimensions[0];
+  n = b_arr->dimensions[0];
+
+  x = (int*) (x_arr->data);
+
+  a = (double*) (a_arr->data);
+  b = (double*) (b_arr->data);
+  W = (double*) (W_arr->data);
+  
+  for (i=0; i < m; i++) {
+    if (x[i]) {
+      E += a[i];
+      for (j=0; j < n; j++) {
+	if (x[m+j]) {
+	  E += W[i*n + j];
+	}
+      }
+    }
+  }
+  
+  for (j=0, i=m; j < n; j++, i++) {
+    if (x[i]) {
+      E += b[j];
+    }
+  }
+
+  return Py_BuildValue("d", -E);
+}
+
 static PyObject *ising_sample(PyObject *self, PyObject *args) { 
 
   PyArrayObject *arr;
@@ -161,6 +205,7 @@ static PyMethodDef methods[] = {
   {"ising_sample", (PyCFunction) ising_sample, 1},
   {"potts_energy", (PyCFunction) potts_energy, 1},
   {"potts_sample", (PyCFunction) potts_sample, 1},
+  {"rbm_energy", (PyCFunction) rbm_energy, 1},
   {NULL, NULL}
 };
 

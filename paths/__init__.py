@@ -1,3 +1,4 @@
+from .rbm import RBM
 from .core import take_time
 from .ising import IsingModel, IsingKernel
 from .potts import PottsModel, PottsKernel
