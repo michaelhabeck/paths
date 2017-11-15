@@ -42,7 +42,7 @@ def bar(w_f, w_r, tol=1e-4):
 
     return dF
 
-def histogram(w_f, w_r, n_iter=1e5, tol=1e-10, alpha=0.):
+def histogram(w_f, w_r, n_iter=1e5, tol=1e-10, alpha=0., return_histogram=False):
     """
     Histogram estimator analogous to histogram methods used
     in DOS estimation
@@ -73,5 +73,7 @@ def histogram(w_f, w_r, n_iter=1e5, tol=1e-10, alpha=0.):
 
     p = Entropy(w, p)
 
-    return p.log_Z(-alpha)-p.log_Z(1-alpha)
-
+    if return_histogram:
+        return p.log_Z(-alpha)-p.log_Z(1-alpha), p
+    else:
+        return p.log_Z(-alpha)-p.log_Z(1-alpha)
